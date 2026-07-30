@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar · MeuDesigner</title>
+<link rel="icon" type="image/png" href="/assets/brand/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/auth.css">
+</head>
+<body>
+<div id="cfgBanner" class="cfg-banner">⚠️ Login em modo demonstração — preencha suas chaves em <code>supabase-config.js</code> para ativar de verdade.</div>
+<div class="auth">
+  <!-- painel de marca -->
+  <aside class="auth-aside">
+    <div class="glow"></div>
+    <a class="aside-brand" href="/">
+      <img src="/assets/brand/mark.png" alt="">
+      <span class="wm">Meu<span>Designer</span></span>
+    </a>
+    <div class="aside-mid">
+      <h2>Seus carrosséis, <span>feitos por IA.</span></h2>
+      <ul class="aside-points">
+        <li><span class="ck">✓</span><span>Roteiro, arte e <b>PNGs prontos</b> pra postar</span></li>
+        <li><span class="ck">✓</span><span><b>19 templates</b> prontos pro seu nicho</span></li>
+        <li><span class="ck">✓</span><span>Do tema ao carrossel <b>em minutos</b></span></li>
+      </ul>
+    </div>
+    <div class="aside-foot">&gt; movido a <b>Claude Code</b></div>
+  </aside>
+
+  <!-- formulário -->
+  <main class="auth-main">
+    <div class="auth-card">
+      <a class="logo-sm" href="/"><img src="/assets/brand/logo.png" alt="MeuDesigner"></a>
+      <h1>Entrar</h1>
+      <p class="sub">Novo por aqui? <a href="/cadastro.html">Criar conta grátis</a></p>
+
+      <div id="alert" class="alert" role="alert"></div>
+
+      <button type="button" id="googleBtn" class="btn btn-google">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Entrar com Google
+      </button>
+
+      <div class="divider">ou com e-mail</div>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@email.com" required>
+        </div>
+        <div class="field">
+          <label for="password">Senha</label>
+          <div class="in-wrap">
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Sua senha" required>
+            <button type="button" class="toggle-pw" tabindex="-1">mostrar</button>
+          </div>
+        </div>
+        <div class="row-between">
+          <label class="check"><input type="checkbox" id="remember" checked> Manter conectado</label>
+          <button type="button" class="link-mut" id="forgot">Esqueci minha senha</button>
+        </div>
+        <button type="submit" id="submitBtn" class="btn btn-primary">
+          <span class="spin"></span><span class="btn-label">Entrar →</span>
+        </button>
+      </form>
+
+      <div class="auth-foot">
+        <a class="back-home" href="/">← Voltar pro site</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/auth.js"></script>
+<script>
+(function(){
+  var A = window.MDAuth;
+  var form=document.getElementById('loginForm'),
+      alertBox=document.getElementById('alert'),
+      btn=document.getElementById('submitBtn');
+  function showAlert(type,msg){ alertBox.className='alert show '+type; alertBox.textContent=msg; }
+  function clearAlert(){ alertBox.className='alert'; alertBox.textContent=''; }
+  function loading(on){ btn.classList.toggle('is-loading',on); btn.disabled=on; }
+
+  if(A.configured) A.redirectIfAuthed();
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault(); clearAlert();
+    if(!A.configured){ showAlert('err','Modo demonstração: preencha supabase-config.js para ativar o login.'); return; }
+    var email=form.email.value.trim(), pw=form.password.value;
+    if(!email || !pw){ showAlert('err','Preencha e-mail e senha.'); return; }
+    loading(true);
+    try{
+      var res=await A.signIn(email,pw);
+      if(res.error){ showAlert('err',A.friendly(res.error)); loading(false); return; }
+      window.location.assign('/app.html');
+    }catch(err){ showAlert('err',A.friendly(err)); loading(false); }
+  });
+
+  document.getElementById('googleBtn').addEventListener('click', async function(){
+    clearAlert();
+    if(!A.configured){ showAlert('err','Modo demonstração: preencha supabase-config.js para ativar o Google.'); return; }
+    try{ var res=await A.signInGoogle(); if(res.error) showAlert('err',A.friendly(res.error)); }
+    catch(err){ showAlert('err',A.friendly(err)); }
+  });
+
+  document.getElementById('forgot').addEventListener('click', async function(){
+    clearAlert();
+    var email=form.email.value.trim();
+    if(!email){ showAlert('info','Digite seu e-mail no campo acima e clique de novo em "Esqueci minha senha".'); form.email.focus(); return; }
+    if(!A.configured){ showAlert('err','Modo demonstração: preencha supabase-config.js para ativar a recuperação.'); return; }
+    try{
+      var res=await A.resetRequest(email);
+      if(res.error){ showAlert('err',A.friendly(res.error)); return; }
+      showAlert('ok','Enviamos um link de redefinição para '+email+'. Confira seu e-mail.');
+    }catch(err){ showAlert('err',A.friendly(err)); }
+  });
+
+  var tg=document.querySelector('.toggle-pw');
+  tg.addEventListener('click',function(){
+    var i=form.password;
+    if(i.type==='password'){ i.type='text'; tg.textContent='ocultar'; }
+    else { i.type='password'; tg.textContent='mostrar'; }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# Configs locais / dev
+.mcp.json
+.claude/
+.DS_Store
+*.log
+node_modules/
+
+# Referência da CarrosseIA (não publicar — código-fonte de terceiro)
+reference.html

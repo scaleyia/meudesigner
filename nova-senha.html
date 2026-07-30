@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova senha · MeuDesigner</title>
+<link rel="icon" type="image/png" href="/assets/brand/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/auth.css">
+</head>
+<body>
+<div id="cfgBanner" class="cfg-banner">⚠️ Modo demonstração — preencha suas chaves em <code>supabase-config.js</code> para ativar de verdade.</div>
+<main class="auth-main" style="min-height:100vh">
+  <div class="auth-card">
+    <a class="logo-sm" href="/" style="display:block"><img src="/assets/brand/logo.png" alt="MeuDesigner"></a>
+    <h1>Definir nova senha</h1>
+    <p class="sub" id="subText">Escolha uma nova senha para sua conta.</p>
+
+    <div id="alert" class="alert" role="alert"></div>
+
+    <form id="pwForm" novalidate>
+      <div class="field">
+        <label for="password">Nova senha</label>
+        <div class="in-wrap">
+          <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Nova senha" minlength="6" required>
+          <button type="button" class="toggle-pw" tabindex="-1">mostrar</button>
+        </div>
+        <div class="hint">Mínimo de 6 caracteres.</div>
+      </div>
+      <div class="field">
+        <label for="password2">Confirmar nova senha</label>
+        <input id="password2" name="password2" type="password" autocomplete="new-password" placeholder="Repita a nova senha" minlength="6" required>
+      </div>
+      <button type="submit" id="submitBtn" class="btn btn-primary">
+        <span class="spin"></span><span class="btn-label">Salvar nova senha →</span>
+      </button>
+    </form>
+
+    <div class="auth-foot">
+      <a href="/login.html">← Voltar para o login</a>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/auth.js"></script>
+<script>
+(function(){
+  var A = window.MDAuth;
+  var form=document.getElementById('pwForm'),
+      alertBox=document.getElementById('alert'),
+      btn=document.getElementById('submitBtn'),
+      sub=document.getElementById('subText');
+  function showAlert(type,msg){ alertBox.className='alert show '+type; alertBox.textContent=msg; }
+  function clearAlert(){ alertBox.className='alert'; alertBox.textContent=''; }
+  function loading(on){ btn.classList.toggle('is-loading',on); btn.disabled=on; }
+
+  var ready=false;
+  async function check(){
+    if(!A.configured) return; // banner cuida do aviso
+    var s = await A.getSession();
+    if(s){ ready=true; }
+  }
+  // link de recuperação dispara este evento ao ser processado na URL
+  A.onChange(function(evt){ if(evt==='PASSWORD_RECOVERY' || evt==='SIGNED_IN') ready=true; });
+  check().then(function(){
+    setTimeout(function(){
+      if(A.configured && !ready){
+        showAlert('info','Abra esta página pelo link enviado no seu e-mail. Se o link expirou, peça outro na tela de login.');
+      }
+    }, 1500);
+  });
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault(); clearAlert();
+    var pw=form.password.value, pw2=form.password2.value;
+    if(pw.length < 6){ showAlert('err','A senha precisa ter pelo menos 6 caracteres.'); return; }
+    if(pw !== pw2){ showAlert('err','As senhas não conferem.'); return; }
+    if(!A.configured){ showAlert('err','Modo demonstração: preencha supabase-config.js.'); return; }
+    if(!ready){ showAlert('err','Abra esta página pelo link do e-mail de recuperação.'); return; }
+    loading(true);
+    try{
+      var res=await A.updatePassword(pw);
+      if(res.error){ showAlert('err',A.friendly(res.error)); loading(false); return; }
+      showAlert('ok','Senha alterada! Redirecionando para o seu painel...');
+      setTimeout(function(){ window.location.assign('/app.html'); }, 1400);
+    }catch(err){ showAlert('err',A.friendly(err)); loading(false); }
+  });
+
+  var tg=document.querySelector('.toggle-pw');
+  tg.addEventListener('click',function(){
+    var i=form.password;
+    if(i.type==='password'){ i.type='text'; tg.textContent='ocultar'; }
+    else { i.type='password'; tg.textContent='mostrar'; }
+  });
+})();
+</script>
+</body>
+</html>
