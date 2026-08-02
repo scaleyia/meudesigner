@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contas conectadas · MeuDesigner</title>
+<link rel="icon" type="image/png" href="/assets/brand/icon.png">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/auth.css">
+<link rel="stylesheet" href="/assets/hub.css?v=20260801c">
+</head>
+<body>
+<div id="guard" class="route-guard"><span class="spin"></span></div>
+
+<div id="shell" style="display:none">
+  <header class="app-header">
+    <div class="app-nav">
+      <div style="display:flex;align-items:center;gap:4px">
+        <a class="brand" href="/app.html"><img src="/assets/brand/logo.png" alt="MeuDesigner"></a>
+        <div class="app-navlinks">
+          <button onclick="location.href='/app.html'">Criar carrossel</button>
+          <button onclick="location.href='/agenda.html'">Agenda</button>
+          <button onclick="location.href='/planejador.html'">Planejador</button>
+          <button class="on" onclick="location.href='/contas.html'">Contas</button>
+          <button onclick="location.href='/analytics.html'">Analytics</button>
+          <button onclick="location.href='/#planos'">Planos</button>
+        </div>
+      </div>
+      <div class="app-user">
+        <button class="credits" id="creditsBtn" title="Seus créditos"><span class="dot"></span><span id="creditsN">0</span> créditos</button>
+        <div class="avatar-wrap">
+          <button class="avatar-btn" id="avatarBtn">·</button>
+          <div class="avatar-menu" id="avatarMenu">
+            <div class="who"><b id="mNome">—</b><span id="mEmail">—</span></div>
+            <button onclick="location.href='/app.html'">Criar carrossel</button>
+            <button onclick="location.href='/agenda.html'">Agenda</button>
+            <button onclick="location.href='/#planos'">Ver planos</button>
+            <button class="danger" id="mLogout">Sair</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap-app">
+    <div class="page-head">
+      <h1>Contas <span style="color:var(--green)">conectadas</span></h1>
+      <p>Conecte seu Instagram para publicar direto pelo MeuDesigner.</p>
+    </div>
+
+    <div class="card">
+      <h2>Instagram</h2>
+      <div class="sub">Contas <b>Business/Creator</b> publicam automaticamente no horário agendado. Contas <b>pessoais</b> recebem um lembrete para publicar com 1 clique.</div>
+      <div class="acc-list" id="accList"><div class="empty">Carregando…</div></div>
+      <button class="btn btn-primary auto" id="connectBtn" style="margin-top:14px">＋ Conectar Instagram</button>
+      <div id="connectMsg" style="font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h2>Como funciona</h2>
+      <div class="sub" style="margin:0">
+        Para publicar automaticamente, o Instagram precisa ser <b>Business ou Creator</b> e estar ligado a uma <b>Página do Facebook</b> —
+        é exigência da Meta. Se sua conta for pessoal, tudo funciona igual, só que no horário agendado você recebe um lembrete
+        e publica com 1 toque. Suas credenciais ficam guardadas com segurança e nunca aparecem no navegador.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/auth.js"></script>
+<script src="/hub.js?v=20260801c"></script>
+</body>
+</html>

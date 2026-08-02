@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agenda · MeuDesigner</title>
+<link rel="icon" type="image/png" href="/assets/brand/icon.png">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/auth.css">
+<link rel="stylesheet" href="/assets/hub.css?v=20260801c">
+</head>
+<body>
+<div id="guard" class="route-guard"><span class="spin"></span></div>
+
+<div id="shell" style="display:none">
+  <header class="app-header">
+    <div class="app-nav">
+      <div style="display:flex;align-items:center;gap:4px">
+        <a class="brand" href="/app.html"><img src="/assets/brand/logo.png" alt="MeuDesigner"></a>
+        <div class="app-navlinks">
+          <button onclick="location.href='/app.html'">Criar carrossel</button>
+          <button class="on" onclick="location.href='/agenda.html'">Agenda</button>
+          <button onclick="location.href='/planejador.html'">Planejador</button>
+          <button onclick="location.href='/contas.html'">Contas</button>
+          <button onclick="location.href='/analytics.html'">Analytics</button>
+          <button onclick="location.href='/#planos'">Planos</button>
+        </div>
+      </div>
+      <div class="app-user">
+        <button class="credits" id="creditsBtn" title="Seus créditos"><span class="dot"></span><span id="creditsN">0</span> créditos</button>
+        <div class="avatar-wrap">
+          <button class="avatar-btn" id="avatarBtn">·</button>
+          <div class="avatar-menu" id="avatarMenu">
+            <div class="who"><b id="mNome">—</b><span id="mEmail">—</span></div>
+            <button onclick="location.href='/app.html'">Criar carrossel</button>
+            <button onclick="location.href='/contas.html'">Contas conectadas</button>
+            <button onclick="location.href='/#planos'">Ver planos</button>
+            <button class="danger" id="mLogout">Sair</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap-app">
+    <div class="page-head">
+      <h1>Sua <span style="color:var(--green)">agenda</span></h1>
+      <p>Os carrosséis que você agendou. Crie um carrossel e clique em “Agendar publicação” para adicioná-lo aqui.</p>
+    </div>
+
+    <div class="card">
+      <h2>Calendário</h2>
+      <div class="cal-top"><button id="calPrev">‹</button><div class="mo" id="calMonth">—</div><button id="calNext">›</button></div>
+      <div class="cal-grid" id="calDow"></div>
+      <div class="cal-grid" id="calGrid" style="margin-top:6px"></div>
+    </div>
+
+    <div class="card">
+      <h2>Posts</h2>
+      <div class="sub">Cancele, reagende ou marque como publicado.</div>
+      <div id="postList"><div class="empty">Carregando…</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/auth.js"></script>
+<script src="/hub.js?v=20260801c"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aprovar carrossel · MeuDesigner</title>
+<link rel="icon" type="image/png" href="/assets/brand/icon.png">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/auth.css">
+<style>
+  body{background:var(--cream);}
+  .wrap{max-width:640px;margin:0 auto;padding:26px 20px 80px;}
+  .top{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .top img{height:30px;}
+  .card{background:var(--paper);border:2px solid var(--ink);border-radius:14px;box-shadow:var(--shadow-sm);padding:20px;margin-bottom:16px;}
+  h1{font-size:22px;font-weight:700;font-family:'Space Grotesk',sans-serif;}
+  .sub{color:var(--ink-3);font-size:13px;margin:4px 0 18px;}
+  .slide{border:2px solid var(--ink);border-radius:11px;padding:14px;margin-bottom:11px;background:var(--cream);}
+  .slide .role{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--deep);background:var(--mint-soft);border:1.5px solid var(--green);border-radius:20px;padding:3px 9px;display:inline-block;margin-bottom:8px;}
+  .slide b{display:block;font-family:'Space Grotesk',sans-serif;font-size:16px;margin-bottom:5px;}
+  .slide p{color:var(--ink-2);font-size:14px;line-height:1.5;white-space:pre-wrap;}
+  .actions{display:flex;gap:12px;margin-top:20px;}
+  .status-banner{border-radius:11px;padding:14px;font-family:'Space Grotesk',sans-serif;font-weight:700;text-align:center;margin-bottom:16px;}
+  .status-banner.ok{background:var(--mint-soft);border:2px solid var(--green);}
+  .status-banner.no{background:#FEE2E2;border:2px solid #E5484D;}
+  textarea.in{width:100%;border:2px solid var(--ink);border-radius:10px;padding:12px;font-family:inherit;font-size:14px;box-shadow:3px 3px 0 var(--ink);margin-top:8px;resize:vertical;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><img src="/assets/brand/logo.png" alt="MeuDesigner"></div>
+  <div id="content"><div class="card" style="text-align:center"><span class="spin" style="display:inline-block"></span></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var token = new URLSearchParams(location.search).get('t') || '';
+  var sb = (window.SUPABASE_URL && window.SUPABASE_ANON_KEY)
+    ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null;
+
+  function esc(s){ return (s||'').replace(/</g,'&lt;'); }
+  function rolePt(r){ return r==='cover'?'Capa':r==='cta'?'CTA':'Slide'; }
+
+  function renderSlides(slides){
+    return (slides||[]).map(function(s){
+      return '<div class="slide"><span class="role">'+rolePt(s.role)+(s.kick?' · '+esc(s.kick):'')+'</span>'+
+        '<b>'+esc(s.title)+'</b><p>'+esc((s.body||'').replace(/\*\*(.+?)\*\*/g,'$1'))+'</p></div>';
+    }).join('');
+  }
+
+  async function load(){
+    if(!sb){ $('content').innerHTML='<div class="card">Configuração ausente.</div>'; return; }
+    if(!token){ $('content').innerHTML='<div class="card">Link inválido.</div>'; return; }
+    var r = await sb.rpc('get_approval', { p_token: token });
+    var d = r.data;
+    if(r.error || !d){ $('content').innerHTML='<div class="card">Link não encontrado ou expirado.</div>'; return; }
+    if(d.expirado){ $('content').innerHTML='<div class="card"><h1>Link expirado</h1><p class="sub">Peça um novo link a quem te enviou.</p></div>'; return; }
+
+    var already = d.status && d.status!=='pendente';
+    var banner = already ? ('<div class="status-banner '+(d.status==='aprovado'?'ok':'no')+'">'+(d.status==='aprovado'?'✓ Você aprovou este carrossel':'✕ Você reprovou este carrossel')+(d.comentario?(' — “'+esc(d.comentario)+'”'):'')+'</div>') : '';
+
+    $('content').innerHTML =
+      '<div class="card">'+banner+
+        '<h1>'+esc(d.tema||'Carrossel para aprovação')+'</h1>'+
+        '<div class="sub">Revise os '+(d.slides?d.slides.length:0)+' slides abaixo e responda.</div>'+
+        renderSlides(d.slides)+
+        (already?'' :
+          '<textarea class="in" id="coment" rows="2" placeholder="Comentário (opcional) — ex.: trocar a cor do slide 2"></textarea>'+
+          '<div class="actions">'+
+            '<button class="btn btn-primary" id="ap">✓ Aprovar</button>'+
+            '<button class="btn btn-google" id="rp">✕ Pedir ajustes</button>'+
+          '</div>')+
+      '</div>';
+
+    if(!already){
+      $('ap').onclick=function(){ responder('aprovado'); };
+      $('rp').onclick=function(){ responder('reprovado'); };
+    }
+  }
+
+  async function responder(status){
+    var coment = $('coment') ? $('coment').value : '';
+    $('ap').disabled=true; if($('rp'))$('rp').disabled=true;
+    var r = await sb.rpc('responder_approval', { p_token: token, p_status: status, p_comentario: coment||null });
+    if(r.error || !(r.data && r.data.ok)){ alert('Erro: '+((r.data&&r.data.erro)||(r.error&&r.error.message)||'tente de novo')); $('ap').disabled=false; if($('rp'))$('rp').disabled=false; return; }
+    load();
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>

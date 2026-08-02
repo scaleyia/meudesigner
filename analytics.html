@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics · MeuDesigner</title>
+<link rel="icon" type="image/png" href="/assets/brand/icon.png">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/auth.css">
+<link rel="stylesheet" href="/assets/hub.css?v=20260801c">
+<style>
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;}
+  .kpi{border:2px solid var(--ink);border-radius:12px;padding:20px 18px;background:var(--cream);position:relative;}
+  .kpi .k-val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:34px;line-height:1;}
+  .kpi .k-lab{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-top:12px;}
+  .kpi.hl{background:var(--mint-soft);border-color:var(--green);}
+  .kpi.hl::before{content:"";position:absolute;top:14px;right:14px;width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);}
+  .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  @media(max-width:820px){.charts-grid{grid-template-columns:1fr;}}
+  .chart-card{background:var(--paper);border:2px solid var(--ink);border-radius:14px;box-shadow:var(--shadow-sm);padding:22px;}
+  .chart-card h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;}
+  .chart-card .ch-sub{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:18px;}
+  .chart-wrap{position:relative;height:250px;}
+  .ch-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--ink-3);font-size:13px;padding:24px;}
+  table.top{width:100%;border-collapse:collapse;font-size:13.5px;}
+  table.top th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:10px 12px;border-bottom:2px solid var(--ink);}
+  table.top td{padding:12px;border-bottom:1.5px solid var(--line);}
+  table.top td.num{font-family:'Space Grotesk',sans-serif;font-weight:700;text-align:right;}
+  table.top tr:last-child td{border-bottom:none;}
+  .an-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:30px;}
+</style>
+</head>
+<body>
+<div id="guard" class="route-guard"><span class="spin"></span></div>
+
+<div id="shell" style="display:none">
+  <header class="app-header">
+    <div class="app-nav">
+      <div style="display:flex;align-items:center;gap:4px">
+        <a class="brand" href="/app.html"><img src="/assets/brand/logo.png" alt="MeuDesigner"></a>
+        <div class="app-navlinks">
+          <button onclick="location.href='/app.html'">Criar carrossel</button>
+          <button onclick="location.href='/agenda.html'">Agenda</button>
+          <button onclick="location.href='/planejador.html'">Planejador</button>
+          <button onclick="location.href='/contas.html'">Contas</button>
+          <button class="on" onclick="location.href='/analytics.html'">Analytics</button>
+          <button onclick="location.href='/#planos'">Planos</button>
+        </div>
+      </div>
+      <div class="app-user">
+        <button class="credits" id="creditsBtn" title="Seus créditos"><span class="dot"></span><span id="creditsN">0</span> créditos</button>
+        <div class="avatar-wrap">
+          <button class="avatar-btn" id="avatarBtn">·</button>
+          <div class="avatar-menu" id="avatarMenu">
+            <div class="who"><b id="mNome">—</b><span id="mEmail">—</span></div>
+            <button onclick="location.href='/app.html'">Criar carrossel</button>
+            <button onclick="location.href='/agenda.html'">Agenda</button>
+            <button onclick="location.href='/#planos'">Ver planos</button>
+            <button class="danger" id="mLogout">Sair</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap-app" id="dash">
+    <div class="an-head">
+      <div>
+        <h1><span style="color:var(--green)">Analytics</span></h1>
+        <p style="color:var(--ink-2);font-size:15px;margin-top:6px">Visão geral da sua produção e do desempenho no Instagram.</p>
+      </div>
+      <div class="range-ctl">
+        <span class="range-lbl">Período</span>
+        <div class="seg-range" id="rangeSeg">
+          <button data-r="7">7 dias</button>
+          <button data-r="30" class="on">30 dias</button>
+          <button data-r="90">90 dias</button>
+          <button data-r="365">1 ano</button>
+        </div>
+        <button class="demo-toggle" id="demoBtn" title="Preencher com dados de exemplo (não grava nada)">Ver exemplo</button>
+      </div>
+    </div>
+
+    <!-- KPIs atividade -->
+    <div class="card">
+      <h2>Atividade</h2>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="k-val" id="kpiTotal">0</div><div class="k-lab">carrosséis criados</div></div>
+        <div class="kpi hl"><div class="k-val" id="kpiPub">0</div><div class="k-lab">publicados</div></div>
+        <div class="kpi"><div class="k-val" id="kpiAgend">0</div><div class="k-lab">agendados</div></div>
+        <div class="kpi"><div class="k-val" id="kpiAguard">0</div><div class="k-lab">aguardando você</div></div>
+        <div class="kpi"><div class="k-val" id="kpiTaxa">—</div><div class="k-lab">taxa de publicação</div></div>
+      </div>
+    </div>
+
+    <!-- KPIs engajamento -->
+    <div class="card">
+      <h2>Engajamento <span class="h2note">contas Business</span></h2>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="k-val" id="kpiLikes">0</div><div class="k-lab">curtidas</div></div>
+        <div class="kpi"><div class="k-val" id="kpiCom">0</div><div class="k-lab">comentários</div></div>
+        <div class="kpi"><div class="k-val" id="kpiSaved">0</div><div class="k-lab">salvamentos</div></div>
+        <div class="kpi"><div class="k-val" id="kpiReach">0</div><div class="k-lab">alcance</div></div>
+        <div class="kpi"><div class="k-val" id="kpiEng">—</div><div class="k-lab">engaj. médio/post</div></div>
+      </div>
+    </div>
+
+    <!-- gráficos -->
+    <div class="charts-grid" style="margin-bottom:26px">
+      <div class="chart-card"><h3>Posts por status</h3><div class="ch-sub">distribuição atual</div>
+        <div class="chart-wrap"><canvas id="chStatus"></canvas><div class="ch-empty" id="emStatus" style="display:none">Sem posts ainda.</div></div></div>
+      <div class="chart-card"><h3>Publicações por mês</h3><div class="ch-sub">volume ao longo do tempo</div>
+        <div class="chart-wrap"><canvas id="chMonth"></canvas><div class="ch-empty" id="emMonth" style="display:none">Sem publicações no período.</div></div></div>
+      <div class="chart-card"><h3>Engajamento por post</h3><div class="ch-sub">top 8 · curtidas + salvamentos</div>
+        <div class="chart-wrap"><canvas id="chEngage"></canvas><div class="ch-empty" id="emEngage" style="display:none">As métricas aparecem após publicar por conta Business.</div></div></div>
+      <div class="chart-card"><h3>Melhores dias para postar</h3><div class="ch-sub">alcance médio por dia da semana</div>
+        <div class="chart-wrap"><canvas id="chWeekday"></canvas><div class="ch-empty" id="emWeekday" style="display:none">Sem dados suficientes ainda.</div></div></div>
+    </div>
+
+    <!-- top posts -->
+    <div class="card">
+      <h2>Top posts</h2>
+      <div class="sub">Seus carrosséis publicados ordenados por salvamentos.</div>
+      <div id="topWrap"><div class="empty">Sem posts publicados ainda. Conecte uma conta em <a href="/contas.html" style="color:var(--deep);font-weight:600">Contas</a> e publique para ver o ranking.</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/auth.js"></script>
+<script src="/hub.js?v=20260801c"></script>
+</body>
+</html>

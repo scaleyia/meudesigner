@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planejador editorial · MeuDesigner</title>
+<link rel="icon" type="image/png" href="/assets/brand/icon.png">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/auth.css">
+<link rel="stylesheet" href="/assets/hub.css?v=20260801c">
+<style>
+  .plan-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px 18px;margin-top:6px;}
+  @media(max-width:720px){.plan-form{grid-template-columns:1fr 1fr;}}
+  .plan-form .full{grid-column:1/-1;}
+  .fld{display:block;}
+  .fld > span{display:block;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-bottom:9px;}
+
+  /* resumo do plano */
+  .plan-summary{display:flex;gap:16px;flex-wrap:wrap;padding:22px 26px;border:2px solid var(--green);border-radius:14px;background:var(--mint-soft);margin-bottom:30px;}
+  .plan-summary .s{display:flex;flex-direction:column;gap:6px;padding-right:26px;border-right:2px solid rgba(34,42,53,.12);}
+  .plan-summary .s:last-child{border-right:none;padding-right:0;}
+  .plan-summary .s b{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;line-height:1;}
+  .plan-summary .s span{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--deep);}
+
+  /* calendário do plano */
+  .cal-day.plan-has{border-color:var(--green);background:var(--paper);}
+  .cal-day .ev{cursor:default;padding:3px 7px;margin-top:2px;}
+  .fmt-legend{display:flex;flex-wrap:wrap;gap:14px 18px;margin-top:18px;padding-top:16px;border-top:1.5px solid var(--line);}
+  .fmt-legend .lg{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);}
+  .fmt-legend .lg i{width:15px;height:15px;border-radius:5px;}
+
+  /* semanas + ideias */
+  .wk{margin-top:34px;}
+  .wk:first-child{margin-top:8px;}
+  .wk-h{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:16px;display:flex;align-items:center;gap:9px;}
+  .wk-h::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--green);}
+  .idea{display:flex;gap:18px;align-items:flex-start;border:2px solid var(--ink);border-radius:14px;background:var(--paper);box-shadow:3px 3px 0 var(--ink);padding:20px;margin-bottom:16px;transition:.15s;}
+  .idea:hover{transform:translateY(-2px);box-shadow:5px 5px 0 var(--ink);}
+  .idea-day{flex:0 0 auto;width:56px;text-align:center;padding-top:2px;}
+  .idea-day .dd{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;line-height:1;}
+  .idea-day .dl{font-family:var(--mono);font-size:9px;text-transform:uppercase;color:var(--ink-3);margin-top:3px;}
+  .idea-main{flex:1;min-width:0;}
+  .idea-main b{font-family:'Space Grotesk',sans-serif;font-size:16px;display:block;margin:10px 0 6px;}
+  .idea-main .gk{font-size:13.5px;color:var(--ink-2);font-style:italic;}
+  .idea-main .tm{font-size:13px;color:var(--ink-3);margin-top:9px;line-height:1.5;}
+  .fmt{font-family:var(--mono);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 10px;border-radius:20px;color:#fff;display:inline-block;}
+  .idea .acts{flex:0 0 auto;display:flex;align-items:center;}
+  .idea .acts .mini{padding:9px 15px;font-size:12.5px;}
+  @media(max-width:600px){.idea{flex-wrap:wrap;gap:14px}.idea .acts{width:100%}}
+</style>
+</head>
+<body>
+<div id="guard" class="route-guard"><span class="spin"></span></div>
+
+<div id="shell" style="display:none">
+  <header class="app-header">
+    <div class="app-nav">
+      <div style="display:flex;align-items:center;gap:4px">
+        <a class="brand" href="/app.html"><img src="/assets/brand/logo.png" alt="MeuDesigner"></a>
+        <div class="app-navlinks">
+          <button onclick="location.href='/app.html'">Criar carrossel</button>
+          <button onclick="location.href='/agenda.html'">Agenda</button>
+          <button class="on" onclick="location.href='/planejador.html'">Planejador</button>
+          <button onclick="location.href='/contas.html'">Contas</button>
+          <button onclick="location.href='/analytics.html'">Analytics</button>
+          <button onclick="location.href='/#planos'">Planos</button>
+        </div>
+      </div>
+      <div class="app-user">
+        <button class="credits" id="creditsBtn" title="Seus créditos"><span class="dot"></span><span id="creditsN">0</span> créditos</button>
+        <div class="avatar-wrap">
+          <button class="avatar-btn" id="avatarBtn">·</button>
+          <div class="avatar-menu" id="avatarMenu">
+            <div class="who"><b id="mNome">—</b><span id="mEmail">—</span></div>
+            <button onclick="location.href='/app.html'">Criar carrossel</button>
+            <button onclick="location.href='/agenda.html'">Agenda</button>
+            <button onclick="location.href='/#planos'">Ver planos</button>
+            <button class="danger" id="mLogout">Sair</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap-app">
+    <div class="page-head">
+      <h1>Planejador <span style="color:var(--green)">editorial</span></h1>
+      <p>Descreva seu nicho e o objetivo; a IA monta um mês inteiro de temas prontos, com gancho e formato. Clique numa ideia para criar o carrossel dela.</p>
+    </div>
+
+    <div class="card">
+      <h2>Gerar plano do mês</h2>
+      <div class="sub">Planejar não gasta créditos — você só usa ao criar cada carrossel.</div>
+      <div class="plan-form">
+        <label class="fld full"><span>Nicho / assunto</span>
+          <input class="in" id="plNicho" placeholder="Ex.: advocacia trabalhista, nutrição esportiva, loja de roupas..."></label>
+        <label class="fld"><span>Objetivo</span>
+          <select class="in" id="plObjetivo">
+            <option value="gerar autoridade">Gerar autoridade</option>
+            <option value="atrair seguidores">Atrair seguidores</option>
+            <option value="gerar vendas / leads">Gerar vendas / leads</option>
+            <option value="engajar a audiência">Engajar a audiência</option>
+            <option value="educar o público">Educar o público</option>
+          </select></label>
+        <label class="fld"><span>Tom de voz</span>
+          <select class="in" id="plTom">
+            <option value="profissional e confiável">Profissional</option>
+            <option value="descontraído e próximo">Descontraído</option>
+            <option value="inspirador e motivacional">Inspirador</option>
+            <option value="direto e objetivo">Direto ao ponto</option>
+            <option value="divertido e leve">Divertido</option>
+          </select></label>
+        <label class="fld"><span>Posts por semana</span>
+          <input class="in" id="plFreq" type="number" min="1" max="7" value="3"></label>
+      </div>
+      <button class="btn btn-primary auto" id="planBtn" style="margin-top:18px"><span class="spin"></span><span class="btn-label">Gerar plano do mês →</span></button>
+    </div>
+
+    <div id="planResult"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/auth.js"></script>
+<script src="/hub.js?v=20260801c"></script>
+</body>
+</html>

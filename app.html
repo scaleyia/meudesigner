@@ -144,6 +144,10 @@
         <a class="brand" href="/app.html"><img src="/assets/brand/logo.png" alt="MeuDesigner"></a>
         <div class="app-navlinks">
           <button id="navProjetos">Meus projetos</button>
+          <button onclick="location.href='/agenda.html'">Agenda</button>
+          <button onclick="location.href='/planejador.html'">Planejador</button>
+          <button onclick="location.href='/contas.html'">Contas</button>
+          <button onclick="location.href='/analytics.html'">Analytics</button>
           <button onclick="location.href='/#planos'">Planos</button>
         </div>
       </div>
@@ -154,6 +158,8 @@
           <div class="avatar-menu" id="avatarMenu">
             <div class="who"><b id="mNome">—</b><span id="mEmail">—</span></div>
             <button id="mProjetos">Meus projetos</button>
+            <button onclick="location.href='/agenda.html'">Agenda</button>
+            <button onclick="location.href='/contas.html'">Contas conectadas</button>
             <button onclick="location.href='/#planos'">Ver planos</button>
             <button class="danger" id="mLogout">Sair</button>
           </div>
@@ -176,8 +182,11 @@
     <section id="step2" style="display:none">
       <div class="step-head"><span class="tag">● Passo 2 de 4</span><h1>Sobre o que é o carrossel?</h1></div>
       <div class="chosen"><img id="chImg" src="" alt=""><div><div class="tp">Template</div><div class="nm" id="chNm">—</div></div><button class="btn btn-google auto trocar" id="trocarBtn" style="width:auto">Trocar</button></div>
-      <label class="lbl">Tema do carrossel</label>
-      <textarea class="in" id="tema" rows="4" placeholder="Ex.: 5 erros que travam o crescimento de uma loja no Instagram — benefícios, o que fazer e dicas."></textarea>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:20px 0 8px">
+        <label class="lbl" style="margin:0">Tema do carrossel</label>
+        <button class="uploadbtn" id="temaIA" type="button" style="font-size:12px"><span class="spin" style="width:13px;height:13px;border-width:2px"></span><span class="btn-label">Gerar tema com IA</span></button>
+      </div>
+      <textarea class="in" id="tema" rows="4" placeholder="Ex.: 5 erros que travam o crescimento de uma loja no Instagram — benefícios, o que fazer e dicas. (ou clique em “Gerar tema com IA”)"></textarea>
       <label class="lbl">Link de matéria (opcional) — a IA lê a página e usa como base</label>
       <input class="in" id="link" type="url" placeholder="https://exemplo.com/materia">
       <label class="lbl">Quantos slides</label>
@@ -193,6 +202,26 @@
       <div class="step-head"><span class="tag">● Passo 3 de 4</span><h1>Ajuste o roteiro e o visual</h1><p>Edite o texto de cada slide e personalize cores, fontes e formato. A prévia atualiza na hora.</p></div>
       <div class="st3">
         <div>
+          <div class="ctrl-card" id="kitCard">
+            <h3>Kit de marca</h3>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+              <select class="in" id="kitSelect" style="flex:1;min-width:150px"><option value="">— nenhum kit —</option></select>
+              <button class="uploadbtn" id="kitApply" type="button">Aplicar</button>
+              <button class="uploadbtn" id="kitSave" type="button">＋ Salvar atual</button>
+            </div>
+            <div id="kitSaveRow" style="display:none;gap:8px;margin-top:10px;align-items:center">
+              <input class="in" id="kitName" type="text" placeholder="Nome da marca (ex.: Cliente X)" style="flex:1;min-width:140px">
+              <button class="uploadbtn" id="kitSaveOk" type="button" style="background:var(--mint-soft);border-color:var(--green)">Salvar</button>
+              <button class="uploadbtn" id="kitSaveCancel" type="button">Cancelar</button>
+            </div>
+            <div style="font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:8px" id="kitHint">Salve cores, fontes e perfil como marca e reaplique em 1 clique.</div>
+          </div>
+          <div class="ctrl-card" id="refCard">
+            <h3>Inspirar-se numa arte</h3>
+            <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:10px;line-height:1.45">Suba uma arte de referência. A IA recria no <b>mesmo estilo</b>, mas com o <b>seu kit de marca</b> e os <b>seus textos</b>.</div>
+            <label class="chk" style="margin:0"><span class="uploadbtn" id="refBtn">↑ Subir arte de referência</span><input type="file" id="refFile" accept="image/*" hidden></label>
+            <div id="refOut" style="margin-top:10px"></div>
+          </div>
           <div class="ctrl-card">
             <h3>Formato</h3>
             <div class="seg" id="aspectSeg">
@@ -246,6 +275,9 @@
       <div class="step-head"><span class="tag">● Passo 4 de 4</span><h1>Seu carrossel está pronto! 🎉</h1><p>Baixe os slides prontos pra postar no Instagram.</p></div>
       <div class="final-actions">
         <button class="btn btn-primary auto" id="dlAll" style="width:auto"><span class="spin"></span><span class="btn-label">⤓ Baixar todas (.zip)</span></button>
+        <button class="btn btn-google auto" id="schedBtn" style="width:auto"><span class="btn-label">📅 Agendar publicação</span></button>
+        <button class="btn btn-google auto" id="repurposeBtn" style="width:auto"><span class="spin"></span><span class="btn-label">✨ Legenda &amp; Reels</span></button>
+        <button class="btn btn-google auto" id="approveBtn" style="width:auto"><span class="btn-label">🔗 Link de aprovação</span></button>
         <button class="btn btn-google auto" id="saveBtn" style="width:auto"><span class="btn-label">Salvar projeto</span></button>
         <button class="btn btn-google auto" id="novo" style="width:auto">+ Novo carrossel</button>
       </div>
@@ -260,6 +292,75 @@
   <h2 id="pvNome">Template</h2><div class="msub">Prévia do estilo (Intro · Conteúdo · CTA).</div>
   <div style="text-align:center"><img id="pvImg" style="width:min(280px,80%);border:2px solid var(--ink);border-radius:10px" src="" alt=""></div>
   <button class="btn btn-primary" id="pvUse" style="margin-top:18px">Usar esse template →</button>
+</div></div>
+<!-- modal repurpose -->
+<div class="modal" id="repModal"><div class="modal-box" style="max-width:640px">
+  <button class="modal-x" id="repClose">&times;</button>
+  <h2>Reaproveitar conteúdo</h2><div class="msub">De 1 carrossel, a IA gera legenda, hashtags, roteiro de Reels e ideias de Stories.</div>
+  <div id="repOut" style="max-height:60vh;overflow:auto"></div>
+</div></div>
+<!-- modal link de aprovação -->
+<div class="modal" id="apprModal"><div class="modal-box">
+  <button class="modal-x" id="apprClose">&times;</button>
+  <h2>Link de aprovação</h2><div class="msub">Envie este link ao cliente. Ele aprova ou reprova sem precisar de login.</div>
+  <div id="apprBody"></div>
+</div></div>
+<style>
+  #schedModal .modal-box{max-width:460px;}
+  #schedModal .lbl{margin-top:20px;}
+  #schedModal .in{border:2px solid var(--line);border-radius:13px;box-shadow:none;padding:14px 16px;font-size:15px;transition:border-color .15s, box-shadow .15s;}
+  #schedModal .in:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(51,181,137,.16);}
+  #schedModal select.in{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23222A35' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;cursor:pointer;}
+  #schedModal .btn-primary{margin-top:22px;}
+  /* seletor de data/hora próprio */
+  .dtwrap{position:relative;}
+  .dtfield{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--ink);text-align:left;}
+  .dtfield svg{color:var(--ink-3);flex:0 0 auto;}
+  .dtfield.on{border-color:var(--green);box-shadow:0 0 0 4px rgba(51,181,137,.16);}
+  .dtpop{position:absolute;z-index:30;top:calc(100% + 8px);left:0;right:0;background:var(--paper);border:2px solid var(--ink);border-radius:14px;box-shadow:6px 6px 0 rgba(34,42,53,.14);padding:16px;}
+  .dt-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .dt-top .dt-mo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;text-transform:capitalize;}
+  .dt-top button{width:34px;height:34px;border:2px solid var(--ink);border-radius:9px;background:var(--paper);box-shadow:2px 2px 0 var(--ink);cursor:pointer;font-size:15px;}
+  .dt-dow,.dt-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+  .dt-dow div{text-align:center;font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;color:var(--ink-3);padding:2px 0;}
+  .dt-day{aspect-ratio:1;border:none;background:transparent;border-radius:9px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .dt-day:hover{background:var(--mint-soft);}
+  .dt-day.out{color:var(--line);cursor:default;} .dt-day.out:hover{background:transparent;}
+  .dt-day.today{box-shadow:inset 0 0 0 2px var(--green);}
+  .dt-day.sel{background:var(--green);color:var(--ink);}
+  .dt-time{margin-top:14px;padding-top:14px;border-top:1.5px solid var(--line);}
+  .dt-time-lbl{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);}
+  .dt-chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px;}
+  .dt-chips button{border:2px solid var(--ink);border-radius:9px;background:var(--paper);box-shadow:2px 2px 0 var(--ink);padding:7px 12px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;cursor:pointer;}
+  .dt-chips button.on{background:var(--green);}
+  #dtTime{padding:11px 14px;}
+</style>
+<!-- modal agendar -->
+<div class="modal" id="schedModal"><div class="modal-box">
+  <button class="modal-x" id="schedClose">&times;</button>
+  <h2>Agendar publicação</h2><div class="msub">Escolha quando publicar. Contas Business publicam sozinhas; as demais recebem lembrete.</div>
+  <label class="lbl">Conta do Instagram</label>
+  <select class="in" id="schedAccount"><option value="">— só lembrete (publico manual) —</option></select>
+  <label class="lbl">Data e hora</label>
+  <div class="dtwrap">
+    <button type="button" class="in dtfield" id="schedField"><span id="schedFieldTxt">Escolher data e hora</span>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></button>
+    <div class="dtpop" id="schedPop" hidden>
+      <div class="dt-top"><button type="button" id="dtPrev">‹</button><span class="dt-mo" id="dtMonth">—</span><button type="button" id="dtNext">›</button></div>
+      <div class="dt-dow" id="dtDow"></div>
+      <div class="dt-grid" id="dtGrid"></div>
+      <div class="dt-time">
+        <span class="dt-time-lbl">Horário</span>
+        <div class="dt-chips" id="dtChips"></div>
+        <input type="time" class="in" id="dtTime" value="09:00">
+      </div>
+      <button type="button" class="btn btn-primary" id="dtOk" style="margin-top:14px">Confirmar</button>
+    </div>
+  </div>
+  <label class="lbl">Legenda (opcional)</label>
+  <textarea class="in" id="schedCaption" rows="3" placeholder="Escreva a legenda do post…"></textarea>
+  <div id="schedMsg" style="font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-top:12px;min-height:16px"></div>
+  <button class="btn btn-primary" id="schedConfirm" style="margin-top:8px"><span class="spin"></span><span class="btn-label">Agendar →</span></button>
 </div></div>
 <!-- modal meus projetos -->
 <div class="modal" id="projModal"><div class="modal-box">
@@ -279,6 +380,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/supabase-config.js"></script>
 <script src="/auth.js"></script>
-<script src="/wizard.js"></script>
+<script src="/wizard.js?v=20260801g"></script>
 </body>
 </html>
